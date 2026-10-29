@@ -194,6 +194,8 @@ repositories {
 dependencies {
     modImplementation (libs.gtm) { isTransitive = false } // GregTech CEu: Modern
     modImplementation (libs.ae2) // AE2
+    compileOnly(files("libs/gtolib-forge-1.20.1-26.7.4.jar")) // GTOLib, compile-only
+
 
     /* Those compete with AE2 */
 //    modCompileOnly (libs.ae2cosmo) // AE2 cosmolite
@@ -317,7 +319,7 @@ tasks {
     java {
         withSourcesJar()
         toolchain {
-            languageVersion = JavaLanguageVersion.of(jdkVersion)
+            languageVersion = JavaLanguageVersion.of(21)
             vendor = JvmVendorSpec.JETBRAINS
         }
         JavaVersion.toVersion(jdkVersion).let {
