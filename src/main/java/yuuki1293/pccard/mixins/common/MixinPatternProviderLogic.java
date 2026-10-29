@@ -66,8 +66,7 @@ public abstract class MixinPatternProviderLogic implements IUpgradeableObject {
             value = "INVOKE",
             target = "Lappeng/helpers/patternprovider/PatternProviderLogic;onPushPatternSuccess(Lappeng/api/crafting/IPatternDetails;)V"),
         require = 2)
-    private void pushPattern(CallbackInfo ci,
-        @Local(ordinal = 0, argsOnly = true) IPatternDetails patternDetails,
+    private void pushPattern(CallbackInfo ci, @Local(ordinal = 0, argsOnly = true) IPatternDetails patternDetails,
         @Local(ordinal = 0, argsOnly = true) Direction direction) {
         if (!isUpgradedWith(PCCard.PROGRAMMED_CIRCUIT_CARD_ITEM.get())) return;
 
