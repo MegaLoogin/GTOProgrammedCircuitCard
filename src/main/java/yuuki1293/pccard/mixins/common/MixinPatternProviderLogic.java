@@ -11,7 +11,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.llamalad7.mixinextras.sugar.Local;
 
@@ -39,15 +38,16 @@ public abstract class MixinPatternProviderLogic implements IUpgradeableObject {
         method = "updatePatterns",
         at = @At(
             value = "INVOKE",
-            target = "Lappeng/api/crafting/PatternDetailsHelper;decodePattern(Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/level/Level;)Lappeng/api/crafting/IPatternDetails;"))
+            target = "Lcom/gtolib/api/ae2/MyPatternDetailsHelper;decodePattern(Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/level/block/entity/BlockEntity;Lappeng/api/networking/IGrid;)Lappeng/api/crafting/IPatternDetails;"))
     private ItemStack updatePatterns(ItemStack stack) {
         if (!isUpgradedWith(PCCard.PROGRAMMED_CIRCUIT_CARD_ITEM.get())) return stack;
 
         return PatternProviderLogicImpl.updatePatterns(stack);
     }
 
+    // GTOCore replaces pushPattern with gtolib$pushPattern, so the target moved there.
     @ModifyArg(
-        method = "pushPattern",
+        method = "gtolib$pushPattern",
         at = @At(
             value = "INVOKE",
             target = "Lappeng/helpers/patternprovider/PatternProviderTarget;containsPatternInput(Ljava/util/Set;)Z"))
@@ -58,14 +58,17 @@ public abstract class MixinPatternProviderLogic implements IUpgradeableObject {
         return result;
     }
 
+    // Two push paths exist in GTOCore: gtolib$pushCraftingMachine (molecular assemblers) and gtolib$pushTarget
+    // (external inventories). Each has exactly one onPushPatternSuccess call, so require = 2 covers both.
     @Inject(
-        method = "pushPattern",
+        method = { "gtolib$pushCraftingMachine", "gtolib$pushTarget" },
         at = @At(
             value = "INVOKE",
             target = "Lappeng/helpers/patternprovider/PatternProviderLogic;onPushPatternSuccess(Lappeng/api/crafting/IPatternDetails;)V"),
         require = 2)
-    private void pushPattern(CallbackInfoReturnable<Boolean> cir,
-        @Local(ordinal = 0, argsOnly = true) IPatternDetails patternDetails, @Local(ordinal = 0) Direction direction) {
+    private void pushPattern(CallbackInfo ci,
+        @Local(ordinal = 0, argsOnly = true) IPatternDetails patternDetails,
+        @Local(ordinal = 0, argsOnly = true) Direction direction) {
         if (!isUpgradedWith(PCCard.PROGRAMMED_CIRCUIT_CARD_ITEM.get())) return;
 
         var be = this.host.getBlockEntity();
