@@ -64,7 +64,7 @@ public abstract class MixinPatternProviderLogic implements IUpgradeableObject {
         method = { "gtolib$pushCraftingMachine", "gtolib$pushTarget" },
         at = @At(
             value = "INVOKE",
-            target = "Lappeng/helpers/patternprovider/PatternProviderLogic;onPushPatternSuccess(Lappeng/api/crafting/IPatternDetails;)V"),
+            target = "Lcom/gtocore/mixin/ae2/crafting/PatternProviderLogicMixin;onPushPatternSuccess(Lappeng/api/crafting/IPatternDetails;)V"),
         require = 2)
     private void pushPattern(CallbackInfo ci, @Local(ordinal = 0, argsOnly = true) IPatternDetails patternDetails,
         @Local(ordinal = 0, argsOnly = true) Direction direction) {
